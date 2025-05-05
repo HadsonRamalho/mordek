@@ -1,6 +1,6 @@
-use std::{env, fs::File};
-use std::io::BufReader;
 use rodio::{Decoder, OutputStream, source::Source};
+use std::io::BufReader;
+use std::{env, fs::File};
 
 use crate::Comando;
 
@@ -39,18 +39,25 @@ pub fn audio_forjar() -> (String, u64) {
 }
 
 fn caminho_duracao_audio(caminho_sys: &str, info_audio: (String, u64)) -> (BufReader<File>, u64) {
-    let caminho_arquivo = format!("{}\\audios\\{}", caminho_sys, info_audio.0);
-    (BufReader::new(File::open(caminho_arquivo).unwrap()), info_audio.1)
+    let caminho_arquivo = if caminho_sys.contains("/") {
+        format!("{}/audios/{}", caminho_sys, info_audio.0)
+    } else {
+        format!("{}\\audios\\{}", caminho_sys, info_audio.0)
+    };
+    (
+        BufReader::new(File::open(caminho_arquivo).unwrap()),
+        info_audio.1,
+    )
 }
 
-pub fn reproduzir_audio(comando: Comando){
+pub fn reproduzir_audio(comando: Comando) {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
 
     let path = match env::current_exe() {
         Ok(path) => {
             if let Some(dir) = path.parent() {
                 dir.to_str().unwrap().to_string()
-            } else{
+            } else {
                 return;
             }
         }
@@ -60,13 +67,14 @@ pub fn reproduzir_audio(comando: Comando){
         }
     };
 
-    let (file, duracao) = match comando{
+    let (file, duracao) = match comando {
         Comando::Obliterar => {
             let info = audio_obliterar();
             caminho_duracao_audio(&path, info)
-        },
+        }
         Comando::Forjar => {
             let info = audio_forjar();
+
             caminho_duracao_audio(&path, info)
         }
         _ => {
