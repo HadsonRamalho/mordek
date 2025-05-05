@@ -1,4 +1,4 @@
-use crate::{Alvo, Comando};
+use crate::Alvo;
 
 
 pub fn detectar_alvo(alvo: &str)
@@ -13,34 +13,4 @@ pub fn detectar_alvo(alvo: &str)
     };
 
     return Ok(alvo)
-}
-
-pub fn detectar_comando(comando: &str)
-    -> Result<Comando, String>{
-    let res = match comando{
-        "--obliterar" => {
-            println!("Sucumba!");
-            Comando::Obliterar
-        },
-        "--agarrar" => {
-            println!("Nas minhas garras!");
-            Comando::Agarrar
-        }
-        "--forjar" => {
-            println!("Forjando...");
-            Comando::Forjar
-        },
-        "--help" => {
-            Comando::Help
-        }
-        "--setup" => {
-            Comando::Setup
-        },
-        _ => {
-            let erro = "Comando inválido. Use --help para ver os comandos disponíveis."; 
-            return Err(erro.to_string())
-        }
-    };
-
-    return Ok(res)
 }

@@ -69,6 +69,6 @@ pub fn agarrar(alvo: Alvo, padrao: &str, audio_tocou: bool){
         }
     }
     if !audio_tocou{
-        reproduzir_audio(Comando::Agarrar);
+        reproduzir_audio(Comando::Agarrar{caminho: String::new(), texto: String::new()});
     }
 }

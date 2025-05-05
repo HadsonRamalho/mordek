@@ -1,8 +1,9 @@
 use audio::obter_caminho_sistema;
-use util::{detectar_alvo, detectar_comando};
+use util::detectar_alvo;
 use agarrar::agarrar;
 use forjar::forjar;
 use obliterar::obliterar;
+use clap::{Parser, Subcommand};
 
 pub mod audio;
 pub mod util;
@@ -10,38 +11,61 @@ pub mod agarrar;
 pub mod forjar;
 pub mod obliterar;
 
-#[derive(Debug)]
-pub enum Comando{
-    Obliterar,
-    Agarrar,
-    Forjar,
+/// Mordek: um utilitário de linha de comando para manipular arquivos com estilo.
+#[derive(Parser, Debug)]
+#[command(name = "mordek", version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    comando: Comando,
+}
 
+#[derive(Subcommand, Debug, Default)]
+pub enum Comando {
+    /// Remove o alvo (arquivo ou diretório) do sistema
+    Obliterar {
+        /// Caminho do arquivo ou diretório
+        caminho: String,
+    },
+
+    /// Lê o conteúdo do alvo (arquivo ou diretório) e procura por um texto
+    Agarrar {
+        /// Caminho do alvo
+        caminho: String,
+        /// Texto a ser procurado
+        texto: String,
+    },
+
+    /// Cria um novo arquivo ou diretório com o conteúdo especificado
+    Forjar {
+        /// Caminho a ser criado
+        caminho: String,
+        /// Conteúdo do novo arquivo (opcional)
+        #[arg(default_value = "")]
+        conteudo: String,
+    },
+
+    /// Configura o idioma do sistema
+    #[default]
     Setup,
-    Help
 }
 
 #[derive(Debug)]
-pub enum Alvo{
+pub enum Alvo {
     Arquivo(String),
-    Diretorio(String)
+    Diretorio(String),
 }
 
-fn main() -> Result<(), String>{
-    let comando = std::env::args().nth(1).expect("Nenhum comando fornecido. Use --help para ver os comandos disponíveis.");
-    let alvo = std::env::args().nth(2).unwrap_or("".to_string());
-    let padrao = std::env::args().nth(3).unwrap_or("".to_string());
+fn main() -> Result<(), String> {
+    let cli = Cli::parse();
 
-    let comando = detectar_comando(&comando)?;
-    match comando{
-        Comando::Help => {
-            listar_comandos();
-            return Ok(());
-        },
+    match cli.comando {
         Comando::Setup => {
             println!("Selecione um idioma: \n1. pt-BR\n2. en-US\n");
             let mut idioma = String::new();
-            std::io::stdin().read_line(&mut idioma).expect("Erro ao ler o idioma.");
-            let idioma = match idioma.trim(){
+            std::io::stdin()
+                .read_line(&mut idioma)
+                .expect("Erro ao ler o idioma.");
+            let idioma = match idioma.trim() {
                 "1" => "pt-BR",
                 "2" => "en-US",
                 _ => {
@@ -50,45 +74,28 @@ fn main() -> Result<(), String>{
                 }
             };
             let path = obter_caminho_sistema();
-            let caminho_arquivo = match path.contains("/") {
-                true => format!("{}/lang.mordek", path),
-                false => format!("{}\\lang.mordek", path),
+            let caminho_arquivo = if path.contains("/") {
+                format!("{}/lang.mordek", path)
+            } else {
+                format!("{}\\lang.mordek", path)
             };
-            std::fs::write(caminho_arquivo, idioma.trim()).expect("Erro ao salvar o idioma.");
+            std::fs::write(caminho_arquivo, idioma.trim())
+                .expect("Erro ao salvar o idioma.");
             println!("Idioma salvo com sucesso.");
-            return Ok(());
         }
-        _ => {}
-    }
-
-    let alvo = detectar_alvo(&alvo)?;
-
-    match comando{
-        Comando::Obliterar => {
+        Comando::Obliterar { caminho } => {
+            let alvo = detectar_alvo(&caminho)?;
             println!("{}", obliterar(alvo));
-        },
-        Comando::Agarrar => {
-            agarrar(alvo, &padrao, false);
-        },
-        Comando::Forjar => {
-            forjar(alvo, &padrao);
-        },
-        _ => {}
+        }
+        Comando::Agarrar { caminho, texto } => {
+            let alvo = detectar_alvo(&caminho)?;
+            agarrar(alvo, &texto, false);
+        }
+        Comando::Forjar { caminho, conteudo } => {
+            let alvo = detectar_alvo(&caminho)?;
+            forjar(alvo, &conteudo);
+        }
     }
 
     Ok(())
-}
-
-fn listar_comandos(){
-    println!("Comandos disponíveis: obliterar, agarrar, forjar\n
-    - Obliterar: Remove o alvo (arquivo ou diretório) do sistema.\n
-    - Agarrar: Lê o conteúdo do alvo (arquivo ou diretório) e procura por um texto.\n
-    - Forjar: Cria um novo arquivo ou diretório com o conteúdo especificado.\n
-    - Setup: Configura o idioma do sistema.\n\n
-    
-    Exemplo de uso:\n
-    - --obliterar <caminho>\n
-    - --agarrar <caminho> <texto>\n
-    - --forjar <caminho> <conteúdo>\n
-    - --setup\n");
 }

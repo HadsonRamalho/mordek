@@ -82,11 +82,11 @@ pub fn reproduzir_audio(comando: Comando) {
     let path = obter_caminho_sistema();
 
     let (file, duracao) = match comando {
-        Comando::Obliterar => {
+        Comando::Obliterar { .. } => {
             let info = audio_obliterar();
             caminho_duracao_audio(&path, info)
         }
-        Comando::Forjar => {
+        Comando::Forjar{..} => {
             let info = audio_forjar();
 
             caminho_duracao_audio(&path, info)

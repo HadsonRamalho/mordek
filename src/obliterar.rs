@@ -7,7 +7,7 @@ pub fn obliterar(alvo: Alvo)
         Alvo::Arquivo(caminho) => {
             match std::fs::remove_file(&caminho){
                 Ok(()) => {
-                    reproduzir_audio(Comando::Obliterar);
+                    reproduzir_audio(Comando::Obliterar{caminho: caminho.clone()});
                     ()
                 },
                 Err(e) => {
@@ -25,7 +25,7 @@ pub fn obliterar(alvo: Alvo)
         Alvo::Diretorio(caminho) => {
             match std::fs::remove_dir_all(&caminho){
                 Ok(()) => {
-                    reproduzir_audio(Comando::Obliterar);
+                    reproduzir_audio(Comando::Obliterar{caminho: caminho.clone()});
                     ()
                 },
                 Err(e) => {

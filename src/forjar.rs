@@ -35,5 +35,5 @@ pub fn forjar(alvo: Alvo, conteudo: &str){
             }
         }
     }
-    reproduzir_audio(crate::Comando::Forjar);
+    reproduzir_audio(crate::Comando::Forjar{caminho: String::new(), conteudo: String::new()});
 }
