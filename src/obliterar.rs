@@ -13,7 +13,7 @@ pub fn obliterar(alvo: Alvo)
                 Err(e) => {
                     match e.kind(){
                         std::io::ErrorKind::NotFound => {
-                            return format!("ERRO: Parece que o arquivo {} já foi obliterado. Mas não por mim...", caminho);
+                            return format!("ERRO: Parece que o arquivo {} já foi obliterado.", caminho);
                         },
                         _ => {
                             return format!("ERRO: Ainda não tenho poder suficiente para obliterar isso... {}", caminho);
@@ -31,7 +31,7 @@ pub fn obliterar(alvo: Alvo)
                 Err(e) => {
                     match e.kind(){
                         std::io::ErrorKind::NotFound => {
-                            return format!("ERRO: O diretório {} já foi obliterado. Mas não por mim...", caminho);
+                            return format!("ERRO: O diretório {} já foi obliterado.", caminho);
                         },
                         _ => {
                             return format!("ERRO: Ainda não tenho poder suficiente para obliterar isso... {}", caminho);

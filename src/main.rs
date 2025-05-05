@@ -37,11 +37,14 @@ pub enum Comando {
 
     /// Cria um novo arquivo ou diretório com o conteúdo especificado
     Forjar {
-        /// Caminho a ser criado
+        /// Caminho ou arquivo a ser criado
         caminho: String,
-        /// Conteúdo do novo arquivo (opcional)
+        /// Conteúdo da pasta ou arquivo (opcional)
         #[arg(default_value = "")]
         conteudo: String,
+        /// Conteúdo do arquivo dentro da pasta (opcional)
+        #[arg(default_value = "")]
+        conteudo_arquivo: Option<String>,
     },
 
     /// Configura o idioma do sistema
@@ -91,9 +94,9 @@ fn main() -> Result<(), String> {
             let alvo = detectar_alvo(&caminho)?;
             agarrar(alvo, &texto, false);
         }
-        Comando::Forjar { caminho, conteudo } => {
+        Comando::Forjar { caminho, conteudo, conteudo_arquivo } => {
             let alvo = detectar_alvo(&caminho)?;
-            forjar(alvo, &conteudo);
+            forjar(alvo, (&conteudo, conteudo_arquivo));
         }
     }
 
