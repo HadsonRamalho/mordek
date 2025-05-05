@@ -33,6 +33,9 @@ pub fn detectar_comando(comando: &str)
         "--help" => {
             Comando::Help
         }
+        "--setup" => {
+            Comando::Setup
+        },
         _ => {
             let erro = "Comando inválido. Use --help para ver os comandos disponíveis."; 
             return Err(erro.to_string())

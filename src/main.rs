@@ -1,3 +1,4 @@
+use audio::obter_caminho_sistema;
 use util::{detectar_alvo, detectar_comando};
 use agarrar::agarrar;
 use forjar::forjar;
@@ -15,6 +16,7 @@ pub enum Comando{
     Agarrar,
     Forjar,
 
+    Setup,
     Help
 }
 
@@ -25,7 +27,7 @@ pub enum Alvo{
 }
 
 fn main() -> Result<(), String>{
-    let comando = std::env::args().nth(1).expect("Nenhum comando fornecido");
+    let comando = std::env::args().nth(1).expect("Nenhum comando fornecido. Use --help para ver os comandos disponíveis.");
     let alvo = std::env::args().nth(2).unwrap_or("".to_string());
     let padrao = std::env::args().nth(3).unwrap_or("".to_string());
 
@@ -35,6 +37,27 @@ fn main() -> Result<(), String>{
             listar_comandos();
             return Ok(());
         },
+        Comando::Setup => {
+            println!("Selecione um idioma: \n1. pt-BR\n2. en-US\n");
+            let mut idioma = String::new();
+            std::io::stdin().read_line(&mut idioma).expect("Erro ao ler o idioma.");
+            let idioma = match idioma.trim(){
+                "1" => "pt-BR",
+                "2" => "en-US",
+                _ => {
+                    println!("Idioma inválido. O sistema usará o padrão (pt-BR).");
+                    "pt-BR"
+                }
+            };
+            let path = obter_caminho_sistema();
+            let caminho_arquivo = match path.contains("/") {
+                true => format!("{}/lang.mordek", path),
+                false => format!("{}\\lang.mordek", path),
+            };
+            std::fs::write(caminho_arquivo, idioma.trim()).expect("Erro ao salvar o idioma.");
+            println!("Idioma salvo com sucesso.");
+            return Ok(());
+        }
         _ => {}
     }
 
@@ -60,10 +83,12 @@ fn listar_comandos(){
     println!("Comandos disponíveis: obliterar, agarrar, forjar\n
     - Obliterar: Remove o alvo (arquivo ou diretório) do sistema.\n
     - Agarrar: Lê o conteúdo do alvo (arquivo ou diretório) e procura por um texto.\n
-    - Forjar: Cria um novo arquivo ou diretório com o conteúdo especificado.\n\n
+    - Forjar: Cria um novo arquivo ou diretório com o conteúdo especificado.\n
+    - Setup: Configura o idioma do sistema.\n\n
     
     Exemplo de uso:\n
     - --obliterar <caminho>\n
     - --agarrar <caminho> <texto>\n
-    - --forjar <caminho> <conteúdo>\n");
+    - --forjar <caminho> <conteúdo>\n
+    - --setup\n");
 }

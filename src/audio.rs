@@ -16,13 +16,39 @@ pub fn audio_agarrar() -> (String, u64) {
     info
 }
 
+pub fn obter_caminho_sistema() -> String{
+    match env::current_exe() {
+        Ok(path) => {
+            if let Some(dir) = path.parent() {
+                dir.to_str().unwrap().to_string()
+            } else {
+                println!("Erro ao obter path do executável.");
+                return "".to_string()
+            }
+        }
+        Err(e) => {
+            eprintln!("Erro ao obter caminho do executável: {}", e);
+            return "".to_string()
+        }
+    }
+}
+
 pub fn audio_obliterar() -> (String, u64) {
     let rnd = rand::random_range(0..4);
-    let info = match rnd {
-        0 => ("sucumba.mp3".to_string(), 3),
-        1 => ("aprecie_o_oblivio.mp3".to_string(), 4),
-        2 => ("e_assim_comeca_o_massacre.mp3".to_string(), 4),
-        _ => ("sucumba.mp3".to_string(), 3),
+    let path = obter_caminho_sistema();
+    let conteudo = std::fs::read_to_string(format!("{}\\lang.mordek", path)).unwrap();
+    let info = match conteudo.as_str(){
+        "pt-BR" => {
+            match rnd {
+                0 => ("sucumba.mp3".to_string(), 3),
+                1 => ("aprecie_o_oblivio.mp3".to_string(), 4),
+                2 => ("e_assim_comeca_o_massacre.mp3".to_string(), 4),
+                _ => ("sucumba.mp3".to_string(), 3),
+            }
+        },
+        _ => {
+            ("aprecie_o_oblivio.mp3".to_string(), 4)
+        }
     };
 
     info
@@ -53,19 +79,7 @@ fn caminho_duracao_audio(caminho_sys: &str, info_audio: (String, u64)) -> (BufRe
 pub fn reproduzir_audio(comando: Comando) {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
 
-    let path = match env::current_exe() {
-        Ok(path) => {
-            if let Some(dir) = path.parent() {
-                dir.to_str().unwrap().to_string()
-            } else {
-                return;
-            }
-        }
-        Err(e) => {
-            eprintln!("Erro ao obter caminho do executável: {}", e);
-            return;
-        }
-    };
+    let path = obter_caminho_sistema();
 
     let (file, duracao) = match comando {
         Comando::Obliterar => {

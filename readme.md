@@ -1,12 +1,13 @@
-# Mordek
+# mordek
 
-Mordek é uma aplicação em Rust que realiza operações em arquivos e diretórios, como remoção, leitura e criação. Além disso, a aplicação reproduz áudios temáticos para cada operação, tornando a experiência mais imersiva.
+mordek é uma aplicação em Rust que te permite realizar operações em arquivos e diretórios, como remoção, leitura e criação. Além disso, a aplicação reproduz áudios temáticos para cada operação, trazendo o Revenã de Ferro para dentro do seu terminal.
 
 ## Funcionalidades
 
 - **Obliterar**: Remove arquivos ou diretórios do sistema.
 - **Agarrar**: Lê o conteúdo de arquivos ou diretórios e procura por um texto específico.
 - **Forjar**: Cria novos arquivos ou diretórios com o conteúdo especificado.
+- **Setup**: Define o idioma do áudio (ainda em fase inicial).
 - **Ajuda**: Lista os comandos disponíveis e como utilizá-los.
 
 ## Como Usar
@@ -25,7 +26,11 @@ Mordek é uma aplicação em Rust que realiza operações em arquivos e diretór
     ```bash
     mordek --forjar <caminho> <conteúdo>
 
-4. **Ajuda**: Exibe os comandos disponíveis.
+4. **Setup**: Exibe as opções de idiomas disponíveis (ainda em fase inicial).
+    ```bash
+    mordek --setup
+
+5. **Ajuda**: Exibe os comandos disponíveis.
     ```bash
     mordek --help
 
